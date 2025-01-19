@@ -12,12 +12,12 @@ export default function App() {
 
       <div className="">
         <div className="grid grid-cols-4 grid-rows-4 gap-2">
-          {connections.getWords().map((word, index) => (
+          {connections.getWords().map((word) => (
             <GridSquare
               key={word}
               word={word}
-              isSelected={connections.isWordSelected(index)}
-              onClick={() => connections.toggleWordSelection(index)}
+              isSelected={connections.isWordSelected(word)}
+              onClick={() => connections.toggleWordSelection(word)}
             />
           ))}
         </div>
@@ -72,14 +72,14 @@ function ActionButton({ onClick, text }: ActionButtonProps) {
 
 type Connections = {
   getWords: () => string[];
-  isWordSelected: (index: number) => boolean;
-  toggleWordSelection: (index: number) => void;
+  isWordSelected: (word: string) => boolean;
+  toggleWordSelection: (word: string) => void;
   deselectAll: () => void;
   submitGuess: () => void;
 };
 
 function useConnections(puzzle: ConnectionsPuzzle): Connections {
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedWords, setSelectedWords] = useState<string[]>([]);
 
   const getWords = () => {
     return [
@@ -90,31 +90,33 @@ function useConnections(puzzle: ConnectionsPuzzle): Connections {
     ];
   };
 
-  const isWordSelected = (index: number) => selectedIds.includes(index);
+  const isWordSelected = (word: string) => selectedWords.includes(word);
 
-  const toggleWordSelection = (index: number) => {
-    const isAlreadySelected = isWordSelected(index);
+  const toggleWordSelection = (word: string) => {
+    const isAlreadySelected = isWordSelected(word);
 
     // If already selected, remove from the selection
     if (isAlreadySelected) {
-      setSelectedIds((prev) => prev.filter((id) => id !== index));
+      setSelectedWords((prev) =>
+        prev.filter((selectedWord) => selectedWord !== word)
+      );
       return;
     }
 
     // If there are fewer than 4 selected, add to the selection
-    if (selectedIds.length < 4) {
-      setSelectedIds((prev) => [...prev, index]);
+    if (selectedWords.length < 4) {
+      setSelectedWords((prev) => [...prev, word]);
       return;
     }
 
     // TODO: add log?
   };
 
-  const deselectAll = () => setSelectedIds([]);
+  const deselectAll = () => setSelectedWords([]);
 
   const submitGuess = () => {
     // If less than 4 selected, return early
-    if (selectedIds.length < 4) {
+    if (selectedWords.length < 4) {
       // TODO: log error
       return;
     }
