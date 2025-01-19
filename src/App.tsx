@@ -200,12 +200,16 @@ function useConnections(puzzle: ConnectionsPuzzle): Connections {
 }
 
 function getWordOptions(puzzle: ConnectionsPuzzle): WordOption[] {
-  return [
+  const words = [
     ...puzzle.yellow.map((word) => ({ word, colour: Colour.YELLOW })),
     ...puzzle.green.map((word) => ({ word, colour: Colour.GREEN })),
     ...puzzle.blue.map((word) => ({ word, colour: Colour.BLUE })),
     ...puzzle.purple.map((word) => ({ word, colour: Colour.PURPLE })),
   ];
+
+  const shuffledArray = words.sort(() => 0.5 - Math.random());
+
+  return shuffledArray;
 }
 
 function areAllWordsTheSameColour(words: WordOption[]): boolean {
