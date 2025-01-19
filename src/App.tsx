@@ -1,17 +1,8 @@
 import { useState } from "react";
-
-type Connection = [string, string, string, string];
-type Connections = [Connection, Connection, Connection, Connection];
-
-const CONNECTIONS: Connections = [
-  ["NOTTINGHAM", "RAIN", "NEW", "BLACK"],
-  ["MALVERN", "FINCHLEY", "OXFORD", "WALTHAMSTOW"],
-  ["BLUE", "RARE", "MEDIUM", "WELL-DONE"],
-  ["OLD", "ANTIQUE", "VINTAGE", "CLASSIC"],
-];
+import { CONNECTIONS_PUZZLE, ConnectionsPuzzle } from "./puzzle";
 
 export default function App() {
-  const selection = useSelection();
+  const connections = useConnections(CONNECTIONS_PUZZLE);
 
   return (
     <div className="p-4 flex flex-col gap-4">
@@ -21,21 +12,21 @@ export default function App() {
 
       <div className="">
         <div className="grid grid-cols-4 grid-rows-4 gap-2">
-          {CONNECTIONS.flat().map((word, index) => (
+          {connections.getWords().map((word, index) => (
             <GridSquare
               key={word}
               word={word}
-              isSelected={selection.isSelected(index)}
-              onClick={() => selection.toggleSelection(index)}
+              isSelected={connections.isWordSelected(index)}
+              onClick={() => connections.toggleWordSelection(index)}
             />
           ))}
         </div>
       </div>
 
       <div className="flex gap-2 items-center justify-center">
-        <ActionButton onClick={selection.deselectAll} text="Deselect all" />
+        <ActionButton onClick={connections.deselectAll} text="Deselect all" />
 
-        <ActionButton onClick={selection.submit} text="Submit" />
+        <ActionButton onClick={connections.submitGuess} text="Submit" />
       </div>
     </div>
   );
@@ -79,20 +70,30 @@ function ActionButton({ onClick, text }: ActionButtonProps) {
   );
 }
 
-type Selection = {
-  isSelected: (index: number) => boolean;
-  toggleSelection: (index: number) => void;
+type Connections = {
+  getWords: () => string[];
+  isWordSelected: (index: number) => boolean;
+  toggleWordSelection: (index: number) => void;
   deselectAll: () => void;
-  submit: () => void;
+  submitGuess: () => void;
 };
 
-function useSelection(): Selection {
+function useConnections(puzzle: ConnectionsPuzzle): Connections {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  const isSelected = (index: number) => selectedIds.includes(index);
+  const getWords = () => {
+    return [
+      ...puzzle.yellow,
+      ...puzzle.green,
+      ...puzzle.blue,
+      ...puzzle.purple,
+    ];
+  };
 
-  const toggleSelection = (index: number) => {
-    const isAlreadySelected = isSelected(index);
+  const isWordSelected = (index: number) => selectedIds.includes(index);
+
+  const toggleWordSelection = (index: number) => {
+    const isAlreadySelected = isWordSelected(index);
 
     // If already selected, remove from the selection
     if (isAlreadySelected) {
@@ -111,7 +112,7 @@ function useSelection(): Selection {
 
   const deselectAll = () => setSelectedIds([]);
 
-  const submit = () => {
+  const submitGuess = () => {
     // If less than 4 selected, return early
     if (selectedIds.length < 4) {
       // TODO: log error
@@ -119,5 +120,11 @@ function useSelection(): Selection {
     }
   };
 
-  return { isSelected, toggleSelection, deselectAll, submit };
+  return {
+    getWords,
+    isWordSelected,
+    toggleWordSelection,
+    deselectAll,
+    submitGuess,
+  };
 }
