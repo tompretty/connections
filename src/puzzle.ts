@@ -10,6 +10,6 @@ export type ConnectionsGroup = [string, string, string, string];
 export const CONNECTIONS_PUZZLE: ConnectionsPuzzle = {
   yellow: ["OLD", "ANTIQUE", "VINTAGE", "CLASSIC"],
   green: ["BLUE", "RARE", "MEDIUM", "WELL-DONE"],
-  blue: ["NOTTINGHAM", "RAIN", "NEW", "BLACK"],
-  purple: ["MALVERN", "FINCHLEY", "OXFORD", "WALTHAMSTOW"],
+  blue: ["MALVERN", "FINCHLEY", "OXFORD", "WALTHAMSTOW"],
+  purple: ["NOTTINGHAM", "RAIN", "NEW", "BLACK"],
 };
